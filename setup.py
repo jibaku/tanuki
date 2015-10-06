@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="survey",
-    version="0.1.1",
-    author="Jessy Kate Schingler",
-    author_email="jessy@jessykate.com",
+    name="tanuki",
+    version="0.1.0",
+    author="Fabien Schwob",
+    author_email="github@x-phuture.com",
     license="AGPL",
-    url="https://github.com/jessykate/django-survey",
+    url="https://github.com/jibaku/tanuki/",
     packages=find_packages(exclude=[]),
     include_package_data=True,
     classifiers=[
