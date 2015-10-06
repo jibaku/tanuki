@@ -1,8 +1,8 @@
-# Django survey
+# Tanuki - creating dynamic forms
+
+## Install
 
 install requirements using `pip install -r requirements.txt`
-
-then run using `./survey_test/manage.py runserver`
 
 ## About
 
@@ -11,16 +11,16 @@ categories, and mark them as required or not. the front-end survey view then
 automatically populates based on the questions that have been defined in the
 admin interface.
 
-Submitted responses can also be viewed via the admin backend. 
+Submitted responses can also be viewed via the admin backend and signal is sended
+when a survey is completed, to allow the use of data in another app.
 
 ## Credits 
 
-some inspiration came from an older
-[django-survey](https://github.com/flynnguy/django-survey) app, but this app
+Some inspiration came from olders app ([django-survey](https://github.com/flynnguy/django-survey) by *flynnguy* and [django-survey](https://github.com/jessykate/django-survey) by jessykate) app, but this app
 uses a different model architecture and different mechanism for dynamic form
 generation. 
 
-## license
+## License
 
 this code is licensed under the [affero general public license](http://www.gnu.org/licenses/agpl-3.0.html). 
 
