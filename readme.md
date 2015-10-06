@@ -2,7 +2,10 @@
 
 ## Install
 
-install requirements using `pip install -r requirements.txt`
+Currently in only can be installed from the git repository. A package on PYPI
+will be available as soon as possible.
+
+`pip install -e git+https://github.com/jibaku/tanuki.git#egg=tanuki`
 
 # Documentation
 

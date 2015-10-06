@@ -7,8 +7,12 @@ setup(
     author_email="github@x-phuture.com",
     license="AGPL",
     url="https://github.com/jibaku/tanuki/",
+    description="""Create dynamic forms in Django""".strip(),
     packages=find_packages(exclude=[]),
     include_package_data=True,
+    install_requires=[
+        'Django>=1.4',
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
