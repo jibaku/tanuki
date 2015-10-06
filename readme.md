@@ -4,6 +4,10 @@
 
 install requirements using `pip install -r requirements.txt`
 
+# Documentation
+
+Read the [documentation](http://tanuki.readthedocs.org/en/latest/)
+
 ## About
 
 Using the admin interface you can create surveys, add questions, give questions
