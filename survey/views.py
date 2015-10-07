@@ -41,7 +41,8 @@ class SurveyDetail(View):
 
         category_items = Category.objects.filter(survey=survey).order_by('order')
         categories = [c.name for c in category_items]
-        form = ResponseForm(survey=survey, user=request.user, step=kwargs.get('step', 0))
+        step = kwargs.get('step', 0)
+        form = ResponseForm(survey=survey, user=request.user, step=step)
         context = {
             'response_form': form,
             'survey': survey,
@@ -91,7 +92,8 @@ class SurveyDetail(View):
                             del request.session['next']
                         return redirect(next)
                     else:
-                        return redirect('survey-confirmation', uuid=response.interview_uuid)
+                        return redirect('survey-confirmation',
+                                        uuid=response.interview_uuid)
         if survey.template is not None and len(survey.template) > 4:
             template_name = survey.template
         else:

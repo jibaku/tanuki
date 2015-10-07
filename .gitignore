@@ -8,3 +8,5 @@ local_settings.py
 survey.db
 
 survey.egg-info
+tanuki.egg-info
+dist
