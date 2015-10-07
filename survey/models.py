@@ -83,19 +83,6 @@ class Question(models.Model):
             validate_list(self.choices)
         super(Question, self).save(*args, **kwargs)
 
-    def get_choices(self):
-        """
-        Parse the choices field and return a tuple formatted appropriately
-        for the 'choices' argument of a form widget.
-        """
-        choices = self.choices.split(',')
-        choices_list = []
-        for c in choices:
-            c = c.strip()
-            choices_list.append((c,c))
-        choices_tuple = tuple(choices_list)
-        return choices_tuple
-
     def __unicode__(self):
         return (self.text)
 

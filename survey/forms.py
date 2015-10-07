@@ -6,12 +6,12 @@ from django.forms import models
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
-from survey.models import Question, Response
-from survey.models import AnswerText, AnswerRadio, AnswerSelect
 from survey.models import AnswerInteger, AnswerSelectMultiple
-from survey.widgets import ImageSelectWidget
+from survey.models import AnswerText, AnswerRadio, AnswerSelect
+from survey.models import Question, Response
 from survey.signals import survey_completed
-
+from survey.utils import get_choices
+from survey.widgets import ImageSelectWidget
 
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
     def render(self):
@@ -58,7 +58,7 @@ class ResponseForm(models.ModelForm):
                         widget=forms.TextInput
                     )
                 elif q.question_type == Question.RADIO:
-                    question_choices = q.get_choices()
+                    question_choices = get_choices(q.choices)
                     self.fields[field_name] = forms.ChoiceField(
                         label=q.text,
                         widget=forms.RadioSelect(
@@ -67,7 +67,7 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT:
-                    question_choices = q.get_choices()
+                    question_choices = get_choices(q.choices)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -77,7 +77,7 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT_IMAGE:
-                    question_choices = q.get_choices()
+                    question_choices = get_choices(q.choices)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -87,7 +87,7 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT_MULTIPLE:
-                    question_choices = q.get_choices()
+                    question_choices = get_choices(q.choices)
                     self.fields[field_name] = forms.MultipleChoiceField(
                         label=q.text,
                         widget=forms.CheckboxSelectMultiple,
