@@ -10,3 +10,5 @@ survey.db
 survey.egg-info
 tanuki.egg-info
 dist
+.tox
+.coverage
