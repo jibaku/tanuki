@@ -7,9 +7,9 @@ from .utils import validate_list
 class Survey(models.Model):
     name = models.CharField(max_length=400)
     description = models.TextField()
-    is_published = models.BooleanField()
-    need_logged_user = models.BooleanField()
-    display_by_question = models.BooleanField()
+    is_published = models.BooleanField(default=False)
+    need_logged_user = models.BooleanField(default=False)
+    display_by_question = models.BooleanField(default=False)
     template = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -64,7 +64,7 @@ class Question(models.Model):
 
     text = models.TextField()
     order = models.IntegerField()
-    required = models.BooleanField()
+    required = models.BooleanField(default=False)
     category = models.ForeignKey(Category, blank=True, null=True,) 
     survey = models.ForeignKey(Survey)
     question_type = models.CharField(max_length=200, choices=QUESTION_TYPES, default=TEXT)
