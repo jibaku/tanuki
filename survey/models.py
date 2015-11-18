@@ -65,12 +65,18 @@ class Question(models.Model):
     text = models.TextField()
     order = models.IntegerField()
     required = models.BooleanField(default=False)
-    category = models.ForeignKey(Category, blank=True, null=True,) 
+    category = models.ForeignKey(Category, blank=True, null=True,)
     survey = models.ForeignKey(Survey)
-    question_type = models.CharField(max_length=200, choices=QUESTION_TYPES, default=TEXT)
-    # the choices field is only used if the question type 
+    question_type = models.CharField(max_length=200,
+                                     choices=QUESTION_TYPES,
+                                     default=TEXT)
+    # the choices field is only used if the question type
     choices = models.TextField(blank=True, null=True,
-        help_text=_(u"if the question type is 'radio', 'select', or 'select multiple' provide a comma-separated list of options for this question ."))
+                               help_text=_(u"""if the question type is 'radio',
+                                               'select', or 'select multiple'
+                                               provide a comma-separated list
+                                               of options for this question .
+                                            """))
 
     class Meta:
         verbose_name = _('question')
@@ -78,8 +84,10 @@ class Question(models.Model):
         ordering = ('survey', 'order')
 
     def save(self, *args, **kwargs):
-        if (self.question_type == Question.RADIO or self.question_type == Question.SELECT 
-            or self.question_type == Question.SELECT_MULTIPLE):
+        is_radio = self.question_type == Question.RADIO
+        is_select = self.question_type == Question.SELECT
+        is_select_multiple = self.question_type == Question.SELECT_MULTIPLE
+        if (is_radio or is_select or is_select_multiple):
             validate_list(self.choices)
         super(Question, self).save(*args, **kwargs)
 
@@ -96,7 +104,8 @@ class Response(models.Model):
     updated = models.DateTimeField(auto_now=True)
     survey = models.ForeignKey(Survey)
     user = models.ForeignKey(User, null=True, blank=True)
-    interview_uuid = models.CharField(_(u"Interview unique identifier"), max_length=36)
+    interview_uuid = models.CharField(_(u"Interview unique identifier"),
+                                      max_length=36)
 
     class Meta:
         verbose_name = _('response')
@@ -115,17 +124,23 @@ class AnswerBase(models.Model):
 # these type-specific answer models use a text field to allow for flexible
 # field sizes depending on the actual question this answer corresponds to. any
 # "required" attribute will be enforced by the form.
+
+
 class AnswerText(AnswerBase):
     body = models.TextField(blank=True, null=True)
+
 
 class AnswerRadio(AnswerBase):
     body = models.TextField(blank=True, null=True)
 
+
 class AnswerSelect(AnswerBase):
     body = models.TextField(blank=True, null=True)
 
+
 class AnswerSelectMultiple(AnswerBase):
     body = models.TextField(blank=True, null=True)
+
 
 class AnswerInteger(AnswerBase):
     body = models.IntegerField(blank=True, null=True)

@@ -13,6 +13,7 @@ from survey.signals import survey_completed
 from survey.utils import get_choices
 from survey.widgets import ImageSelectWidget
 
+
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
     def render(self):
         return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))

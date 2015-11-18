@@ -37,3 +37,4 @@ The GNU General Public License permits making a modified version and letting the
 
 [![Build Status](https://travis-ci.org/jibaku/tanuki.svg?branch=master)](https://travis-ci.org/jibaku/tanuki)
 [![codecov.io](https://codecov.io/github/jibaku/tanuki/coverage.svg?branch=master)](https://codecov.io/github/jibaku/tanuki?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/5770c6171b854641abcb86eead8cba23)](https://www.codacy.com/app/jibaku/tanuki)

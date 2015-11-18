@@ -61,10 +61,14 @@ class SurveyDetail(View):
         category_items = Category.objects.filter(survey=survey).order_by('order')
         categories = [c.name for c in category_items]
         form = ResponseForm(request.POST, survey=survey, user=request.user, step=kwargs.get('step', 0))
-        context = {'response_form': form, 'survey': survey, 'categories': categories}
+        context = {
+            'response_form': form,
+            'survey': survey,
+            'categories': categories
+        }
         if form.is_valid():
             session_key = 'survey_%s' % (kwargs['id'],)
-            if not session_key in request.session:
+            if session_key not in request.session:
                 request.session[session_key] = {}
             for key, value in form.cleaned_data.items():
                 request.session[session_key][key] = value
@@ -74,7 +78,9 @@ class SurveyDetail(View):
             response = None
             if survey.display_by_question:
                 if not form.has_next_step():
-                    save_form = ResponseForm(request.session[session_key], survey=survey, user=request.user)
+                    save_form = ResponseForm(request.session[session_key],
+                                             survey=survey,
+                                             user=request.user)
                     response = save_form.save()
             else:
                 response = form.save()

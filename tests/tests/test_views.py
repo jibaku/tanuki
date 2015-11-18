@@ -7,6 +7,7 @@ from django.test import Client
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
+from survey.views import IndexView, SurveyDetail, ConfirmView, SurveyCompleted
 
 class PostUrlsTestCase(TestCase):
     def setUp(self):
