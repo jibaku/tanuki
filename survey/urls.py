@@ -1,6 +1,9 @@
 from django.conf.urls import patterns, url
 
-from .views import IndexView, SurveyDetail, ConfirmView, SurveyCompleted
+from .views import IndexView
+from .views import SurveyDetail
+from .views import ConfirmView
+from .views import SurveyCompleted
 
 urlpatterns = patterns(
     '',
