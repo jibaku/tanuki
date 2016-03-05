@@ -44,7 +44,8 @@ class ResponseForm(models.ModelForm):
         # type as appropriate.
         data = kwargs.get('data')
         for index, q in enumerate(survey.questions()):
-            if self.survey.display_by_question and index != self.step and self.step is not None:
+            if (self.survey.display_by_question and
+               index != self.step and self.step is not None):
                 continue
             else:
                 field_name = "question_%d" % q.pk
@@ -107,28 +108,30 @@ class ResponseForm(models.ModelForm):
                 # attribute as well (this is used in the template to allow
                 # sorting the questions by category)
                 if q.category:
+                    cat_name = q.category.name
                     classes = self.fields[field_name].widget.attrs.get("class")
+                    category_class = " cat_%s" % q.category.name
                     if classes:
-                        self.fields[field_name].widget.attrs["class"] = classes + (" cat_%s" % q.category.name)
+                        new_classes = classes + (category_class)
                     else:
-                        self.fields[field_name].widget.attrs["class"] = (" cat_%s" % q.category.name)
-                    self.fields[field_name].widget.attrs["category"] = q.category.name
+                        new_classes = (category_class)
+                    self.fields[field_name].widget.attrs["class"] = new_classes
+                    self.fields[field_name].widget.attrs["category"] = cat_name
 
+                classes = self.fields[field_name].widget.attrs.get("class")
                 if q.question_type == Question.SELECT:
-                    classes = self.fields[field_name].widget.attrs.get("class")
-                    self.fields[field_name].widget.attrs["class"] = classes + (" cs-select cs-skin-boxes")
+                    new_classes = classes + (" cs-select cs-skin-boxes")
+                elif q.question_type == Question.RADIO:
+                    new_classes = classes + (
+                        " fs-radio-group fs-radio-custom clearfix")
+                # elif q.question_type == Question.SELECT_MULTIPLE:
+                #    new_classes = classes + (" ")
+                self.fields[field_name].widget.attrs["class"] = new_classes
 
-                if q.question_type == Question.RADIO:
-                    classes = self.fields[field_name].widget.attrs.get("class")
-                    self.fields[field_name].widget.attrs["class"] = classes + (" fs-radio-group fs-radio-custom clearfix")
-
-                #if q.question_type == Question.SELECT_MULTIPLE:
-                #    classes = self.fields[field_name].widget.attrs.get("class")
-                #    self.fields[field_name].widget.attrs["class"] = classes + (" ")
-
-                # initialize the form field with values from a POST request, if any.
+                # initialize the form field with values from a POST request, if
+                # any.
                 if data:
-                    self.fields[field_name].initial = data.get('question_%d' % q.pk)
+                    self.fields[field_name].initial = data.get(field_name)
 
     def has_next_step(self):
         """

@@ -24,6 +24,12 @@ class IndexView(TemplateView):
 
 class SurveyDetail(View):
 
+    def get_survey_categories(self, survey):
+        return Category.objects.filter(survey=survey).order_by('order')
+
+    def get_user_response(self, user, survey):
+        return Response.objects.filter(survey=survey, user=user)
+
     def get(self, request, *args, **kwargs):
         survey = get_object_or_404(Survey, is_published=True, id=kwargs['id'])
         if survey.template is not None and len(survey.template) > 4:
@@ -36,10 +42,10 @@ class SurveyDetail(View):
         if survey.need_logged_user and not request.user.is_authenticated():
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         if survey.need_logged_user and request.user.is_authenticated():
-            if Response.objects.filter(survey=survey, user=request.user).exists():
+            if self.get_user_response(request.user, survey).exists():
                 return redirect('survey-completed', id=survey.id)
 
-        category_items = Category.objects.filter(survey=survey).order_by('order')
+        category_items = self.get_survey_categories(survey)
         categories = [c.name for c in category_items]
         step = kwargs.get('step', 0)
         form = ResponseForm(survey=survey, user=request.user, step=step)
@@ -56,11 +62,14 @@ class SurveyDetail(View):
         if survey.need_logged_user and not request.user.is_authenticated():
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         if survey.need_logged_user and request.user.is_authenticated():
-            if Response.objects.filter(survey=survey, user=request.user).exists():
+            if self.get_user_response(request.user, survey).exists():
                 return redirect('survey-completed', id=survey.id)
-        category_items = Category.objects.filter(survey=survey).order_by('order')
+        category_items = self.get_survey_categories(survey)
         categories = [c.name for c in category_items]
-        form = ResponseForm(request.POST, survey=survey, user=request.user, step=kwargs.get('step', 0))
+        form = ResponseForm(request.POST,
+                            survey=survey,
+                            user=request.user,
+                            step=kwargs.get('step', 0))
         context = {
             'response_form': form,
             'survey': survey,

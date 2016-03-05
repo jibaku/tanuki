@@ -7,7 +7,9 @@ def validate_list(value):
     """
     values = value.split(',')
     if len(values) < 2:
-        raise ValidationError("The selected field requires an associated list of choices. Choices must contain more than one item.")
+        msg = "The selected field requires an associated list of choices. "
+        msg += "Choices must contain more than one item."
+        raise ValidationError(msg)
 
 
 def get_choices(value):
@@ -19,6 +21,6 @@ def get_choices(value):
     choices_list = []
     for c in choices:
         c = c.strip()
-        choices_list.append((c,c))
+        choices_list.append((c, c))
     choices_tuple = tuple(choices_list)
     return choices_tuple
