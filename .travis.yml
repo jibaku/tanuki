@@ -1,8 +1,11 @@
 language: python
 env:
+  - TOX_ENV=py27-1.9
   - TOX_ENV=py27-1.8
+  - TOX_ENV=py27-1.7
+  - TOX_ENV=py26-1.7
   - TOX_ENV=coverage
-  #- TOX_ENV=pep8
+  - TOX_ENV=pep8
 
 before_install:
   - pip install tox --use-mirrors
