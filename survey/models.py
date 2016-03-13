@@ -13,6 +13,7 @@ class Survey(models.Model):
     need_logged_user = models.BooleanField(default=False)
     display_by_question = models.BooleanField(default=False)
     template = models.CharField(max_length=255, null=True, blank=True)
+    separator = models.CharField(max_length=1, default=',')
 
     class Meta:
         verbose_name = _('survey')
@@ -87,20 +88,18 @@ class Question(models.Model):
         ordering = ('survey', 'order')
 
     def save(self, *args, **kwargs):
-        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
         is_radio = self.question_type == Question.RADIO
         is_select = self.question_type == Question.SELECT
         is_select_multiple = self.question_type == Question.SELECT_MULTIPLE
         if (is_radio or is_select or is_select_multiple):
-            validate_list(self.choices, separator=separator)
+            validate_list(self.choices, separator=self.survey.separator)
         super(Question, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return (self.text)
 
     def get_choices(self):
-        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
-        return get_choices(self.choices)
+        return get_choices(self.choices, separator=self.survey.separator)
 
 
 class Response(models.Model):

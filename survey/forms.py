@@ -27,11 +27,11 @@ class ResponseForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         # expects a survey object to be passed in initially
-        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
         empty_tuple = ('', '-------------')
         survey = kwargs.pop('survey')
         self.survey = survey
         self.user = kwargs.pop('user')
+        self.separator = self.survey.separator
         try:
             self.step = int(kwargs.pop('step'))
         except KeyError:
@@ -63,7 +63,7 @@ class ResponseForm(models.ModelForm):
                     )
                 elif q.question_type == Question.RADIO:
                     question_choices = get_choices(q.choices,
-                                                   separator=separator)
+                                                   separator=self.separator)
                     self.fields[field_name] = forms.ChoiceField(
                         label=q.text,
                         widget=forms.RadioSelect(
@@ -73,7 +73,7 @@ class ResponseForm(models.ModelForm):
                     )
                 elif q.question_type == Question.SELECT:
                     question_choices = get_choices(q.choices,
-                                                   separator=separator)
+                                                   separator=self.separator)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -84,7 +84,7 @@ class ResponseForm(models.ModelForm):
                     )
                 elif q.question_type == Question.SELECT_IMAGE:
                     question_choices = get_choices(q.choices,
-                                                   separator=separator)
+                                                   separator=self.separator)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -95,7 +95,7 @@ class ResponseForm(models.ModelForm):
                     )
                 elif q.question_type == Question.SELECT_MULTIPLE:
                     question_choices = get_choices(q.choices,
-                                                   separator=separator)
+                                                   separator=self.separator)
                     self.fields[field_name] = forms.MultipleChoiceField(
                         label=q.text,
                         widget=forms.CheckboxSelectMultiple,
