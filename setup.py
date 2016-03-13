@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="tanuki",
-    version="0.1.1",
+    version="0.1.2",
     author="Fabien Schwob",
     author_email="github@x-phuture.com",
     license="AGPL",
