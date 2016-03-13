@@ -3,6 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from .utils import validate_list
 from django.conf import settings
+from survey.utils import get_choices
+
 
 class Survey(models.Model):
     name = models.CharField(max_length=400)
