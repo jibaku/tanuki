@@ -85,11 +85,12 @@ class Question(models.Model):
         ordering = ('survey', 'order')
 
     def save(self, *args, **kwargs):
+        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
         is_radio = self.question_type == Question.RADIO
         is_select = self.question_type == Question.SELECT
         is_select_multiple = self.question_type == Question.SELECT_MULTIPLE
         if (is_radio or is_select or is_select_multiple):
-            validate_list(self.choices)
+            validate_list(self.choices, separator=separator)
         super(Question, self).save(*args, **kwargs)
 
     def __unicode__(self):

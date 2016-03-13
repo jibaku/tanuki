@@ -1,8 +1,9 @@
+"""Setup conf for tanuki app."""
 from setuptools import setup, find_packages
 
 setup(
     name="tanuki",
-    version="0.1.0",
+    version="0.1.1",
     author="Fabien Schwob",
     author_email="github@x-phuture.com",
     license="AGPL",

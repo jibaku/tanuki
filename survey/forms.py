@@ -5,6 +5,7 @@ from django import forms
 from django.forms import models
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 from survey.models import AnswerInteger, AnswerSelectMultiple
 from survey.models import AnswerText, AnswerRadio, AnswerSelect
@@ -26,6 +27,7 @@ class ResponseForm(models.ModelForm):
 
     def __init__(self, *args, **kwargs):
         # expects a survey object to be passed in initially
+        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
         empty_tuple = ('', '-------------')
         survey = kwargs.pop('survey')
         self.survey = survey
@@ -60,7 +62,8 @@ class ResponseForm(models.ModelForm):
                         widget=forms.TextInput
                     )
                 elif q.question_type == Question.RADIO:
-                    question_choices = get_choices(q.choices)
+                    question_choices = get_choices(q.choices,
+                                                   separator=separator)
                     self.fields[field_name] = forms.ChoiceField(
                         label=q.text,
                         widget=forms.RadioSelect(
@@ -69,7 +72,8 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT:
-                    question_choices = get_choices(q.choices)
+                    question_choices = get_choices(q.choices,
+                                                   separator=separator)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -79,7 +83,8 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT_IMAGE:
-                    question_choices = get_choices(q.choices)
+                    question_choices = get_choices(q.choices,
+                                                   separator=separator)
                     # add an empty option at the top so that the user has to
                     # explicitly select one of the options
                     question_choices = tuple([empty_tuple]) + question_choices
@@ -89,7 +94,8 @@ class ResponseForm(models.ModelForm):
                         choices=question_choices
                     )
                 elif q.question_type == Question.SELECT_MULTIPLE:
-                    question_choices = get_choices(q.choices)
+                    question_choices = get_choices(q.choices,
+                                                   separator=separator)
                     self.fields[field_name] = forms.MultipleChoiceField(
                         label=q.text,
                         widget=forms.CheckboxSelectMultiple,
@@ -134,18 +140,14 @@ class ResponseForm(models.ModelForm):
                     self.fields[field_name].initial = data.get(field_name)
 
     def has_next_step(self):
-        """
-        Check if the form has a next step
-        """
+        """Check if the form has a next step."""
         if self.survey.display_by_question:
             if self.step < self.steps_count-1:
                 return True
         return False
 
     def next_step_url(self):
-        """
-        Return the url for the next step
-        """
+        """Return the url for the next step."""
         if self.has_next_step():
             return reverse('survey-detail-step',
                            kwargs={
@@ -156,9 +158,7 @@ class ResponseForm(models.ModelForm):
             return None
 
     def current_step_url(self):
-        """
-        Return the url for the current step
-        """
+        """Return the url for the current step."""
         return reverse('survey-detail-step',
                        kwargs={
                            'id': self.survey.id,
