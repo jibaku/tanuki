@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from .utils import validate_list
-
+from django.conf import settings
 
 class Survey(models.Model):
     name = models.CharField(max_length=400)
@@ -95,6 +95,10 @@ class Question(models.Model):
 
     def __unicode__(self):
         return (self.text)
+
+    def get_choices(self):
+        separator = getattr(settings, 'SURVEY_SEPARATOR', ',')
+        return get_choices(self.choices)
 
 
 class Response(models.Model):
