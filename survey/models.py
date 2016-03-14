@@ -30,6 +30,7 @@ class Survey(models.Model):
         if self.pk:
             qs = Question.objects.filter(survey=self.pk)
             qs = qs.order_by('category__order', 'order')
+            return qs
         else:
             return Question.objects.none()
 
