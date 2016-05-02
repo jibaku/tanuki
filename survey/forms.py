@@ -1,37 +1,43 @@
-import uuid
+"""Dynamic forms created from DB data."""
 import logging
+import uuid
 
 from django import forms
-from django.forms import models
 from django.core.urlresolvers import reverse
+from django.forms import models
 from django.utils.safestring import mark_safe
-from django.conf import settings
 
-from survey.models import AnswerInteger, AnswerSelectMultiple
-from survey.models import AnswerText, AnswerRadio, AnswerSelect
-from survey.models import Question, Response
+from survey.models import (AnswerInteger, AnswerRadio, AnswerSelect,
+                           AnswerSelectMultiple, AnswerText, Question,
+                           Response)
 from survey.signals import survey_completed
 from survey.utils import get_choices
 from survey.widgets import ImageSelectWidget
 
 
 class HorizontalRadioRenderer(forms.RadioSelect.renderer):
+    """FormRendered to have radio button horizontaly rather than verticaly."""
+
     def render(self):
+        """Render content."""
         return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
 class ResponseForm(models.ModelForm):
+    """Form to handle user response."""
+
     class Meta:
         model = Response
         fields = ()
 
     def __init__(self, *args, **kwargs):
-        # expects a survey object to be passed in initially
+        """A survey object need to be passed as the survey kwargs."""
         empty_tuple = ('', '-------------')
         survey = kwargs.pop('survey')
         self.survey = survey
         self.user = kwargs.pop('user')
         self.separator = self.survey.separator
+        self.callback_code = kwargs.pop('callback_code', None)
         try:
             self.step = int(kwargs.pop('step'))
         except KeyError:
@@ -40,7 +46,10 @@ class ResponseForm(models.ModelForm):
         super(ResponseForm, self).__init__(*args, **kwargs)
         random_uuid = uuid.uuid4().hex
         self.uuid = random_uuid
-
+        self.fields['tanuki_callback_code'] = forms.CharField(
+            widget=forms.HiddenInput, required=False
+        )
+        self.fields['tanuki_callback_code'].initial = self.callback_code
         self.steps_count = survey.questions().count()
         # add a field for each survey question, corresponding to the question
         # type as appropriate.
@@ -142,7 +151,7 @@ class ResponseForm(models.ModelForm):
     def has_next_step(self):
         """Check if the form has a next step."""
         if self.survey.display_by_question:
-            if self.step < self.steps_count-1:
+            if self.step < (self.steps_count - 1):
                 return True
         return False
 
@@ -152,7 +161,7 @@ class ResponseForm(models.ModelForm):
             return reverse('survey-detail-step',
                            kwargs={
                                'id': self.survey.id,
-                               'step': self.step+1
+                               'step': self.step + 1
                            })
         else:
             return None
@@ -166,7 +175,9 @@ class ResponseForm(models.ModelForm):
                        })
 
     def save(self, commit=True):
-        # save the response object
+        """
+        save the response object
+        """
         response = super(ResponseForm, self).save(commit=False)
         response.survey = self.survey
         response.interview_uuid = self.uuid
@@ -178,6 +189,7 @@ class ResponseForm(models.ModelForm):
         data = {
             'survey_id': response.survey.id,
             'interview_uuid': response.interview_uuid,
+            'callback_code': self.callback_code,
             'responses': []
         }
         # create an answer object for each question and associate it with this

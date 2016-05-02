@@ -1,3 +1,6 @@
+"""
+Survey views
+"""
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -11,6 +14,8 @@ from django.views.generic import TemplateView, View
 
 
 class IndexView(TemplateView):
+    """Display a list of the published survey available to all users."""
+
     template_name = "survey/list.html"
 
     def get_context_data(self, **kwargs):
@@ -32,6 +37,7 @@ class SurveyDetail(View):
 
     def get(self, request, *args, **kwargs):
         survey = get_object_or_404(Survey, is_published=True, id=kwargs['id'])
+        callback_code = request.GET.get('callback_code', None)
         if survey.template is not None and len(survey.template) > 4:
             template_name = survey.template
         else:
@@ -48,17 +54,22 @@ class SurveyDetail(View):
         category_items = self.get_survey_categories(survey)
         categories = [c.name for c in category_items]
         step = kwargs.get('step', 0)
-        form = ResponseForm(survey=survey, user=request.user, step=step)
+        form = ResponseForm(survey=survey,
+                            user=request.user,
+                            step=step,
+                            callback_code=callback_code)
         context = {
             'response_form': form,
             'survey': survey,
             'categories': categories,
+            'callback_code': callback_code,
         }
 
         return render(request, template_name, context)
 
     def post(self, request, *args, **kwargs):
         survey = get_object_or_404(Survey, is_published=True, id=kwargs['id'])
+        callback_code = request.POST.get('tanuki_callback_code', None)
         if survey.need_logged_user and not request.user.is_authenticated():
             return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
         if survey.need_logged_user and request.user.is_authenticated():
@@ -69,7 +80,8 @@ class SurveyDetail(View):
         form = ResponseForm(request.POST,
                             survey=survey,
                             user=request.user,
-                            step=kwargs.get('step', 0))
+                            step=kwargs.get('step', 0),
+                            callback_code=callback_code)
         context = {
             'response_form': form,
             'survey': survey,
